@@ -1,0 +1,9 @@
+Django==3.2.12
+djangorestframework==3.13.1
+psycopg2==2.9.3
+drf-yasg==1.20.0 # crea un documentacion de endpoints
+django-extensions==3.1.5
+django-filter==21.1
+Faker==13.3.3 # Genera nombres aleatorios para pruebas.
+drf-nested-routers==0.93.4 # Permite realizar nested routers de más de 1 nivel
+django-autoslug==1.9.8 # Permite generar slug automaticamente
