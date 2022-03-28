@@ -28,7 +28,12 @@ class Persona(models.Model):
         max_length=70,
         null=True
     )
-    usuario = models.ForeignKey(
+    # usuario = models.ForeignKey(
+    #     User,
+    #     verbose_name=("Usuario del sistema relacionado a la persona"),
+    #     on_delete=models.CASCADE
+    # )
+    usuario = models.OneToOneField(
         User,
         verbose_name=("Usuario del sistema relacionado a la persona"),
         on_delete=models.CASCADE
