@@ -10,7 +10,7 @@ from Rodajes.models import Serie
 
 
 class SeriesTests(APITestCase):
-    fake = Faker('es_ES')
+    fake = Faker('es_MX')
     
     def test_create_serie(self):
         """
@@ -18,7 +18,35 @@ class SeriesTests(APITestCase):
         """
         url = reverse('series-list')
         data = {
-            "nombre": self.fake.name()
+            "nombre": "casados con hijos",
+            "elenco": [
+                {
+                    "usuario": {
+                        "username": "rancio",
+                        "first_name": "Rancio",
+                        "last_name": "Perez",
+                        "email": "rancio@gmail.com",
+                        "password": "rancio123"
+                    },
+                    "sexo": "H",
+                    "fecha_nacimiento": "1990-01-01",
+                    "debut": "2000-01-01",
+                    "pais": "México"
+                },
+                {
+                    "usuario": {
+                        "username": "rancio2",
+                        "first_name": "Rancio",
+                        "last_name": "Perez",
+                        "email": "rancio@gmail.com",
+                        "password": "rancio123"
+                    },
+                    "sexo": "H",
+                    "fecha_nacimiento": "1990-01-01",
+                    "debut": "2000-01-01",
+                    "pais": "México"
+                }
+            ]
         }
         response = self.client.post(url, data, format='json')
         print(response.data)

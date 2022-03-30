@@ -37,13 +37,13 @@ class Serie(models.Model):
         Persona,
         blank=True,
         related_name="serie_elenco",
-        verbose_name=("Generos de la serie")
+        verbose_name=("Elenco Actoral de la serie")
     )
     creadores = models.ManyToManyField(
         Persona,
         blank=True,
         related_name="serie_creadores",
-        verbose_name=("Generos de la serie")
+        verbose_name=("Creadores de la serie")
     )
     generos = models.ManyToManyField(
         Genero,

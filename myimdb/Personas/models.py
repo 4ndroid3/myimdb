@@ -54,7 +54,7 @@ class Persona(models.Model):
     )
 
     def __str__(self):
-        return self.usuario.username
+        return self.usuario.first_name + " " + self.usuario.last_name
 
 
     
