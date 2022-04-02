@@ -1,38 +1,45 @@
 """ Serializadores de los endpoints de series """
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, SlugRelatedField
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
-from Rodajes.models import Capitulo, Serie, Temporada
-from Personas.models import Persona
+from Rodajes.models import Capitulo, Genero, Serie, Temporada
+from Personas.models import Pais, Persona, Tipo
 
-
-class UserSerializer(ModelSerializer):
-    """ serializadores de usuarios """
-    class Meta:
-        """Meta"""
-        model = User
-        fields = (
-            'username',
-            'first_name',
-            'last_name',
-            'email',
-            'password'
-        )
 
 class PersonaSerieSerializer(ModelSerializer):
     """ serializadores de personas """
-    usuario = UserSerializer()
+    pais = SlugRelatedField(
+        slug_field='id',
+        queryset=Pais.objects.all(),
+        required=False,
+    )
+    tipo = SlugRelatedField(
+        slug_field='nombre',
+        queryset=Tipo.objects.all(),
+        required=False,
+        many=True,
+    )
+    
     class Meta:
         """Meta"""
         model = Persona
         fields = (
-            'usuario',
-            'sexo',
+            'nombre',
+            'apellido',
             'fecha_nacimiento',
             'debut',
-            'pais'
+            'pais',
+            'sexo',
+            'tipo',
         )
+
+class GenerosSerializer(ModelSerializer):
+    """ serializadores de generos """
+    class Meta:
+        """Meta"""
+        model = Genero
+        fields = '__all__'
 
 class SeriesSerializer(ModelSerializer):
     """ serializadores de series """
@@ -41,23 +48,51 @@ class SeriesSerializer(ModelSerializer):
         """
         Crea una serie
         """
-        
-        actores = validated_data.pop('elenco')
+        try:
+            actores = validated_data.pop('elenco')
+        except:
+            actores = []
+        try:
+            creadores = validated_data.pop('creadores')
+        except:
+            creadores = []
+        try:
+            generos = validated_data.pop('generos')
+        except:
+            generos = []
         serie = Serie(**validated_data)
         serie.save()
 
+
         for actor in actores:
-            user_list = actor.pop('usuario')
-            user = User.objects.create(**user_list)
+            print('actor:', actor)
+            tipo = actor.pop('tipo')
             persona_actor = Persona.objects.create(
-                usuario=user,
                 **actor
             )
+            persona_actor.tipo.set(tipo)
             serie.elenco.add(persona_actor)
+        
+        for creador in creadores:
+            tipo = creador.pop('tipo')
+            persona_creador = Persona.objects.create(
+                **creador
+            )
+            persona_creador.tipo.set(tipo)
+            serie.creadores.add(persona_creador)
+        
+        serie.generos.set(generos)
     
         return serie
 
-    elenco = PersonaSerieSerializer(many=True)
+    elenco = PersonaSerieSerializer(many=True, required=False)
+    creadores = PersonaSerieSerializer(many=True, required=False)
+    generos = SlugRelatedField(
+        slug_field='nombre',
+        queryset=Genero.objects.all(),        
+        many=True,
+        required=False,
+    )
 
     class Meta:
         """Meta"""

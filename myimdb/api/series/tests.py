@@ -21,31 +21,32 @@ class SeriesTests(APITestCase):
             "nombre": "casados con hijos",
             "elenco": [
                 {
-                    "usuario": {
-                        "username": "rancio",
-                        "first_name": "Rancio",
-                        "last_name": "Perez",
-                        "email": "rancio@gmail.com",
-                        "password": "rancio123"
-                    },
-                    "sexo": "H",
+                    "nombre": "juan",
+                    "apellido": "perez",
                     "fecha_nacimiento": "1990-01-01",
                     "debut": "2000-01-01",
-                    "pais": "México"
+                    # "pais": 'argentina',
+                    "sexo": "H",
+                    # "tipo": [
+                    #     "Actor",
+                    # ]
                 },
+            ],
+            "creadores": [
                 {
-                    "usuario": {
-                        "username": "rancio2",
-                        "first_name": "Rancio",
-                        "last_name": "Perez",
-                        "email": "rancio@gmail.com",
-                        "password": "rancio123"
-                    },
-                    "sexo": "H",
+                    "nombre": "juan2",
+                    "apellido": "perez2",
                     "fecha_nacimiento": "1990-01-01",
                     "debut": "2000-01-01",
-                    "pais": "México"
-                }
+                    # "pais": 'argentina',
+                    "sexo": "H",
+                    # "tipo": [
+                    #     "Actor",
+                    # ]
+                },
+            ],
+            "generos": [
+                
             ]
         }
         response = self.client.post(url, data, format='json')
