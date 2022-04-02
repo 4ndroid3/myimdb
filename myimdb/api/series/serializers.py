@@ -1,5 +1,13 @@
 """ Serializadores de los endpoints de series """
-from rest_framework.serializers import ModelSerializer, SlugRelatedField
+from rest_framework.serializers import (
+    ModelSerializer,
+    SlugRelatedField,
+    StringRelatedField,
+    HyperlinkedRelatedField,
+    RelatedField,
+    SerializerMethodField
+)
+from rest_framework.reverse import reverse
 
 from django.contrib.auth.models import User, Group
 
@@ -20,7 +28,7 @@ class PersonaSerieSerializer(ModelSerializer):
         required=False,
         many=True,
     )
-    
+
     class Meta:
         """Meta"""
         model = Persona
@@ -40,6 +48,62 @@ class GenerosSerializer(ModelSerializer):
         """Meta"""
         model = Genero
         fields = '__all__'
+
+
+class CapituloSerializer(ModelSerializer):
+    """ serializadores de capitulos """
+    class Meta:
+        """Meta"""
+        model = Capitulo
+        fields = (
+            'nombre',
+            'numero',
+            'duracion',
+            'puntuacion',
+        )
+
+# class CapituloHyperlinkedSerializer(HyperlinkedRelatedField):
+#     """ serializadores de capitulos """
+#     view_name ='numero'
+#     queryset = Capitulo.objects.all()
+    
+#     def get_url(self, obj, view_name, request, format):
+#         print('ACAAAAAAAAAAAAAAAAAAAA')
+#         print(obj)
+#         url_kwargs = {
+#             'series_slug': obj.temporada.serie.slug,
+#             'temporadas_numero': obj.temporada.numero,
+#         }
+
+#         return reverse(
+#             view_name, kwargs=url_kwargs, request=request, format=format
+#         )
+    
+#     def get_object(self, view_name, view_args, view_kwargs):
+#         lookup_kwargs = {
+#             'series__slug': view_kwargs['series_slug'],
+#             'numero': view_kwargs['temporadas_numero'],
+#         }
+#         return self.get_queryset().get(**lookup_kwargs)
+
+
+class TemporadaSerializer(ModelSerializer):
+    """ serializadores de temporadas """
+    capitulos = CapituloSerializer(many=True)
+    cant_capitulos = SerializerMethodField()
+
+    class Meta:
+        """Meta"""
+        model = Temporada
+        fields = (
+            'numero',
+            'cant_capitulos',
+            'capitulos',
+        )
+    
+    def get_cant_capitulos(self, obj):
+        return obj.capitulos.count()
+
 
 class SeriesSerializer(ModelSerializer):
     """ serializadores de series """
@@ -93,6 +157,10 @@ class SeriesSerializer(ModelSerializer):
         many=True,
         required=False,
     )
+    temporadas = TemporadaSerializer(
+        many=True,
+    )
+    cant_temporadas = SerializerMethodField()
 
     class Meta:
         """Meta"""
@@ -101,22 +169,14 @@ class SeriesSerializer(ModelSerializer):
             'nombre',
             'elenco',
             'creadores',
-            'generos'
+            'generos',
+            'cant_temporadas',
+            'temporadas',
+            'temporadas_lista'
         )
 
-
-class CapituloSerializer(ModelSerializer):
-    """ serializadores de capitulos """
-    class Meta:
-        """Meta"""
-        model = Capitulo
-        fields = '__all__'
+    def get_cant_temporadas(self, obj):
+        return obj.temporadas.count()
 
 
-class TemporadaSerializer(ModelSerializer):
-    """ serializadores de temporadas """
-    class Meta:
-        """Meta"""
-        model = Temporada
-        fields = '__all__'
 

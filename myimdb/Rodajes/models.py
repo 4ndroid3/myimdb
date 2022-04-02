@@ -68,7 +68,7 @@ class Temporada(models.Model):
     serie = models.ForeignKey(
         Serie,
         on_delete=models.CASCADE,
-        related_name="serie",
+        related_name="temporadas",
         verbose_name="Serie",
     )
 
@@ -99,12 +99,12 @@ class Capitulo(models.Model):
     temporada = models.ForeignKey(
         Temporada,
         on_delete=models.CASCADE,
-        related_name="temporada",
+        related_name="capitulos",
         verbose_name="Temporada",
     )
 
     def __str__(self):
-        return self.temporada.numero + " - " + str(self.nombre)
+        return str(self.temporada.serie.nombre) + ' - Temporada', str(self.temporada.numero) + " - " + str(self.nombre)
 
 class Pelicula(models.Model):
     """

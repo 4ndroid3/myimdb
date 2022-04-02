@@ -82,6 +82,7 @@ class Persona(models.Model):
         null=True,
         blank=True,
         verbose_name=("Pais"),
+        related_name="persona_pais",
         help_text=("Pais de nacimiento"),
     )
     slug = AutoSlugField(
