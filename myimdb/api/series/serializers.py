@@ -102,6 +102,7 @@ class TemporadaSerializer(ModelSerializer):
         )
     
     def get_cant_capitulos(self, obj):
+        """creo un campo nuevo llamado cant_capitulos"""
         return obj.capitulos.count()
 
 
@@ -110,19 +111,19 @@ class SeriesSerializer(ModelSerializer):
 
     def create(self, validated_data):
         """
-        Crea una serie
+        Se re-escribe create para hacer las relaciones many-to-many
         """
         try:
             actores = validated_data.pop('elenco')
-        except:
+        except ValueError:
             actores = []
         try:
             creadores = validated_data.pop('creadores')
-        except:
+        except ValueError:
             creadores = []
         try:
             generos = validated_data.pop('generos')
-        except:
+        except ValueError:
             generos = []
         serie = Serie(**validated_data)
         serie.save()

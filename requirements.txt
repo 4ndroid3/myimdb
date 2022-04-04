@@ -7,3 +7,4 @@ django-filter==21.1
 Faker==13.3.3 # Genera nombres aleatorios para pruebas.
 drf-nested-routers==0.93.4 # Permite realizar nested routers de más de 1 nivel
 django-autoslug==1.9.8 # Permite generar slug automaticamente
+pytest-django==4.5.2
