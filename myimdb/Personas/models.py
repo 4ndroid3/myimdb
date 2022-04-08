@@ -85,7 +85,7 @@ class Persona(models.Model):
         related_name="persona_pais",
         help_text=("Pais de nacimiento"),
     )
-    slug = AutoSlugField(
+    slugname = AutoSlugField(
         populate_from='apellido',
         unique=True,
         always_update=True,

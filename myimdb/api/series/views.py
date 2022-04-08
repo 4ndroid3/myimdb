@@ -35,5 +35,5 @@ class PersonasSerieView(ModelViewSet):
     """ Representación de las Personas en la API """
     queryset = Persona.objects.all()
     serializer_class = PersonaSerieSerializer
-    lookup_field = 'slug'
+    lookup_field = 'slugname'
     # permission_classes = [permissions.IsAuthenticated]

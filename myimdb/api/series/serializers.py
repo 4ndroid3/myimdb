@@ -4,8 +4,10 @@ from rest_framework.serializers import (
     SlugRelatedField,
     StringRelatedField,
     HyperlinkedRelatedField,
+    HyperlinkedModelSerializer,
     RelatedField,
-    SerializerMethodField
+    SerializerMethodField,
+    HyperlinkedIdentityField
 )
 from rest_framework.reverse import reverse
 
@@ -62,31 +64,6 @@ class CapituloSerializer(ModelSerializer):
             'puntuacion',
         )
 
-# class CapituloHyperlinkedSerializer(HyperlinkedRelatedField):
-#     """ serializadores de capitulos """
-#     view_name ='numero'
-#     queryset = Capitulo.objects.all()
-    
-#     def get_url(self, obj, view_name, request, format):
-#         print('ACAAAAAAAAAAAAAAAAAAAA')
-#         print(obj)
-#         url_kwargs = {
-#             'series_slug': obj.temporada.serie.slug,
-#             'temporadas_numero': obj.temporada.numero,
-#         }
-
-#         return reverse(
-#             view_name, kwargs=url_kwargs, request=request, format=format
-#         )
-    
-#     def get_object(self, view_name, view_args, view_kwargs):
-#         lookup_kwargs = {
-#             'series__slug': view_kwargs['series_slug'],
-#             'numero': view_kwargs['temporadas_numero'],
-#         }
-#         return self.get_queryset().get(**lookup_kwargs)
-
-
 class TemporadaSerializer(ModelSerializer):
     """ serializadores de temporadas """
     capitulos = CapituloSerializer(many=True)
@@ -113,18 +90,21 @@ class SeriesSerializer(ModelSerializer):
         """
         Se re-escribe create para hacer las relaciones many-to-many
         """
-        try:
+        if 'elenco' in validated_data:
             actores = validated_data.pop('elenco')
-        except ValueError:
+        else:
             actores = []
-        try:
+        
+        if 'creadores' in validated_data:
             creadores = validated_data.pop('creadores')
-        except ValueError:
+        else:
             creadores = []
-        try:
+        
+        if 'generos' in validated_data:
             generos = validated_data.pop('generos')
-        except ValueError:
+        else:
             generos = []
+        
         serie = Serie(**validated_data)
         serie.save()
 
@@ -173,7 +153,6 @@ class SeriesSerializer(ModelSerializer):
             'generos',
             'cant_temporadas',
             'temporadas',
-            'temporadas_lista'
         )
 
     def get_cant_temporadas(self, obj):
