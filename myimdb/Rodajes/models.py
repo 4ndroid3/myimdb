@@ -61,7 +61,6 @@ class Temporada(models.Model):
     Representa la temporada/season de una serie
     """
     numero = models.IntegerField(
-        unique=True,
         verbose_name="Numero de temporada"
     )
 

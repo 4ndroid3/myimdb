@@ -104,13 +104,16 @@ class SeriesSerializer(ModelSerializer):
             generos = validated_data.pop('generos')
         else:
             generos = []
+        if 'temporadas' in validated_data:
+            temporadas = validated_data.pop('temporadas')
+        else:
+            temporadas = []
         
         serie = Serie(**validated_data)
         serie.save()
 
 
         for actor in actores:
-            print('actor:', actor)
             tipo = actor.pop('tipo')
             persona_actor = Persona.objects.create(
                 **actor

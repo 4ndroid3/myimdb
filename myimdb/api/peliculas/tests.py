@@ -23,6 +23,5 @@ class PeliculasTests(APITestCase):
             "puntuacion": round(uniform(0, 10), 2),
         }
         response = self.client.post(url, data, format='json')
-        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Pelicula.objects.count(), 1)

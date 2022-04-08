@@ -61,6 +61,5 @@ class SeriesTests(APITestCase):
             ]
         }
         response = self.client.post(url, data, format='json')
-        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Serie.objects.count(), 1)
