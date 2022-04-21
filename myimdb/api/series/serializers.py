@@ -2,12 +2,7 @@
 from rest_framework.serializers import (
     ModelSerializer,
     SlugRelatedField,
-    StringRelatedField,
-    HyperlinkedRelatedField,
-    HyperlinkedModelSerializer,
-    RelatedField,
     SerializerMethodField,
-    HyperlinkedIdentityField
 )
 from rest_framework.reverse import reverse
 
@@ -104,6 +99,7 @@ class SeriesSerializer(ModelSerializer):
             generos = validated_data.pop('generos')
         else:
             generos = []
+            
         if 'temporadas' in validated_data:
             temporadas = validated_data.pop('temporadas')
         else:

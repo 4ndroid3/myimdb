@@ -10,7 +10,7 @@ from Personas.models import Persona
 
 class SeriesView(ModelViewSet):
     """ Representación de las Series en la API """
-    queryset = Serie.objects.all()
+    queryset = Serie.objects.all().order_by('-id')
     serializer_class = SeriesSerializer
     lookup_field = 'slug'
     # permission_classes = [permissions.IsAuthenticated]
