@@ -7,6 +7,17 @@ from rest_framework.serializers import (
 from Rodajes.models import Genero, Pelicula
 from Personas.models import Pais, Persona, Tipo
 
+class PersonaPeliculaSerializerMinWrite(ModelSerializer):
+    """ Serializador de las personas en la pelicula """
+    tipo = SlugRelatedField(
+        slug_field='nombre',
+        queryset=Tipo.objects.all(),
+        required=False,
+        many=True,
+    )
+    class Meta:
+        model = Persona
+        fields = ('nombre', 'apellido', 'tipo')
 
 class PersonasPeliculaSerializer(ModelSerializer):
     """ serializadores de personas """
@@ -70,6 +81,7 @@ class PeliculaSerializer(ModelSerializer):
             'slug',
             'duracion',
             'puntuacion',
+            'año',
             'elenco',
             'director',
             'guionista',
@@ -93,6 +105,11 @@ class PeliculaSerializerWrite(ModelSerializer):
         else:
             directores = []
         
+        if 'guionista' in validated_data:
+            guionistas = validated_data.pop('guionista')
+        else:
+            guionistas = []
+        
         if 'generos' in validated_data:
             generos = validated_data.pop('generos')
         else:
@@ -103,32 +120,35 @@ class PeliculaSerializerWrite(ModelSerializer):
 
         for actor in actores:
             tipo = actor.pop('tipo')
-            persona_actor = Persona.objects.create(
-                **actor
-            )
+            persona_actor = Persona.objects.get_or_create(**actor)[0] #--> [Persona, True]
             persona_actor.tipo.set(tipo)
             pelicula.elenco.add(persona_actor)
 
         for director in directores:
             tipo = director.pop('tipo')
-            persona_director = Persona.objects.create(
-                **director
-            )
+            persona_director = Persona.objects.get_or_create(**director)[0] #--> [Persona, True]
             persona_director.tipo.set(tipo)
             pelicula.director.add(persona_director)
+        
+        for guionista in guionistas:
+            tipo = guionista.pop('tipo')
+            persona_guionista = Persona.objects.get_or_create(**guionista)[0] #--> [Persona, True]
+            persona_guionista.tipo.set(tipo)
+            pelicula.guionista.add(persona_guionista)
 
         pelicula.generos.set(generos)
 
         return pelicula
-    elenco = PersonasPeliculaSerializer(
+
+    elenco = PersonaPeliculaSerializerMinWrite(
         many=True,
         required=False
     )
-    director = PersonasPeliculaSerializer(
+    director = PersonaPeliculaSerializerMinWrite(
         many=True,
         required=False
     )
-    guionista = PersonasPeliculaSerializer(
+    guionista = PersonaPeliculaSerializerMinWrite(
         many=True,
         required=False
     )
@@ -145,6 +165,7 @@ class PeliculaSerializerWrite(ModelSerializer):
             'nombre',
             'duracion',
             'puntuacion',
+            'año',
             'elenco',
             'director',
             'guionista',

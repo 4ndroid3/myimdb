@@ -128,6 +128,11 @@ class Pelicula(models.Model):
         null=True,
         help_text="Duracion en minutos de la pelicula"
     )
+    año = models.IntegerField(
+        null=True,
+        verbose_name="Año",
+        help_text="Año del estreno"
+    )
     elenco = models.ManyToManyField(
         Persona,
         blank=True,
