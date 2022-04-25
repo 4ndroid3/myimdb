@@ -127,13 +127,13 @@ class PeliculaSerializerWrite(ModelSerializer):
         for director in directores:
             tipo = director.pop('tipo')
             persona_director = Persona.objects.get_or_create(**director)[0] #--> [Persona, True]
-            persona_director.tipo.set(tipo)
+            persona_director.tipo.add(tipo[0])
             pelicula.director.add(persona_director)
         
         for guionista in guionistas:
             tipo = guionista.pop('tipo')
             persona_guionista = Persona.objects.get_or_create(**guionista)[0] #--> [Persona, True]
-            persona_guionista.tipo.set(tipo)
+            persona_guionista.tipo.add(tipo[0])
             pelicula.guionista.add(persona_guionista)
 
         pelicula.generos.set(generos)
