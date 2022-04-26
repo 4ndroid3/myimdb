@@ -4,17 +4,17 @@ from rest_framework.serializers import (
     SlugRelatedField,
 )
 
-from Rodajes.models import Genero, Pelicula
+from Rodajes.models import Elenco, Genero, Pelicula
 from Personas.models import Pais, Persona, Tipo
 
 class PersonaPeliculaSerializerMinWrite(ModelSerializer):
     """ Serializador de las personas en la pelicula """
-    tipo = SlugRelatedField(
-        slug_field='nombre',
-        queryset=Tipo.objects.all(),
-        required=False,
-        many=True,
-    )
+    # tipo = SlugRelatedField(
+    #     slug_field='nombre',
+    #     queryset=Tipo.objects.all(),
+    #     required=False,
+    #     many=True,
+    # )
     class Meta:
         model = Persona
         fields = ('nombre', 'apellido', 'tipo')
@@ -100,15 +100,15 @@ class PeliculaSerializerWrite(ModelSerializer):
         else:
             actores = []
 
-        if 'director' in validated_data:
-            directores = validated_data.pop('director')
-        else:
-            directores = []
+        # if 'director' in validated_data:
+        #     directores = validated_data.pop('director')
+        # else:
+        #     directores = []
         
-        if 'guionista' in validated_data:
-            guionistas = validated_data.pop('guionista')
-        else:
-            guionistas = []
+        # if 'guionista' in validated_data:
+        #     guionistas = validated_data.pop('guionista')
+        # else:
+        #     guionistas = []
         
         if 'generos' in validated_data:
             generos = validated_data.pop('generos')
@@ -118,24 +118,26 @@ class PeliculaSerializerWrite(ModelSerializer):
         pelicula = Pelicula(**validated_data)
         pelicula.save()
 
+        elenco = Elenco()
+
         for actor in actores:
-            tipo = actor.pop('tipo')
             persona_actor = Persona.objects.get_or_create(**actor)[0] #--> [Persona, True]
-            persona_actor.tipo.set(tipo)
-            pelicula.elenco.add(persona_actor)
+            elenco.actores.set(persona_actor)
 
-        for director in directores:
-            tipo = director.pop('tipo')
-            persona_director = Persona.objects.get_or_create(**director)[0] #--> [Persona, True]
-            persona_director.tipo.add(tipo[0])
-            pelicula.director.add(persona_director)
+        # for director in directores:
+        #     tipo = director.pop('tipo')
+        #     persona_director = Persona.objects.get_or_create(**director)[0] #--> [Persona, True]
+        #     persona_director.tipo.add(tipo[0])
+        #     pelicula.director.add(persona_director)
         
-        for guionista in guionistas:
-            tipo = guionista.pop('tipo')
-            persona_guionista = Persona.objects.get_or_create(**guionista)[0] #--> [Persona, True]
-            persona_guionista.tipo.add(tipo[0])
-            pelicula.guionista.add(persona_guionista)
+        # for guionista in guionistas:
+        #     tipo = guionista.pop('tipo')
+        #     persona_guionista = Persona.objects.get_or_create(**guionista)[0] #--> [Persona, True]
+        #     persona_guionista.tipo.add(tipo[0])
+        #     pelicula.guionista.add(persona_guionista)
 
+        elenco.save()
+        pelicula.elenco.set(elenco)
         pelicula.generos.set(generos)
 
         return pelicula
@@ -144,14 +146,14 @@ class PeliculaSerializerWrite(ModelSerializer):
         many=True,
         required=False
     )
-    director = PersonaPeliculaSerializerMinWrite(
-        many=True,
-        required=False
-    )
-    guionista = PersonaPeliculaSerializerMinWrite(
-        many=True,
-        required=False
-    )
+    # director = PersonaPeliculaSerializerMinWrite(
+    #     many=True,
+    #     required=False
+    # )
+    # guionista = PersonaPeliculaSerializerMinWrite(
+    #     many=True,
+    #     required=False
+    # )
     generos = SlugRelatedField(
         slug_field='nombre',
         queryset=Genero.objects.all(),        
@@ -167,7 +169,7 @@ class PeliculaSerializerWrite(ModelSerializer):
             'puntuacion',
             'año',
             'elenco',
-            'director',
-            'guionista',
+            # 'director',
+            # 'guionista',
             'generos'
         )

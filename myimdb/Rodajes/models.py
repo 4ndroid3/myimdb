@@ -16,6 +16,34 @@ class Genero(models.Model):
     def __str__(self):
         return self.nombre
 
+class Elenco(models.Model):
+    """
+    Representacion de un elenco que
+    integra un conjunto de personas relacionadas
+    con una pelicula o serie
+    """
+    actores = models.ManyToManyField(
+        Persona,
+        blank=True,
+        related_name="elenco_actores",
+        verbose_name=("Elenco Actoral de la Pelicula/Serie")
+    )
+    directores = models.ManyToManyField(
+        Persona,
+        blank=True,
+        related_name="elenco_director",
+        verbose_name=("Director/Directores")
+    )
+    guionistas = models.ManyToManyField(
+        Persona,
+        blank=True,
+        related_name="elenco_guionista",
+        verbose_name=("Guionistas/Creadores de la Serie/Pelicula")
+    )
+
+    def __str__(self):
+        return "Elenco de la pelicula/serie"
+        
 class Serie(models.Model):
     """
     Clase que representa una serie en la DB
@@ -33,17 +61,26 @@ class Serie(models.Model):
         max_length=350,
         help_text='Slug autogenerado'
     )
-    elenco = models.ManyToManyField(
-        Persona,
+    # actores = models.ManyToManyField(
+    #     Persona,
+    #     blank=True,
+    #     related_name="serie_elenco",
+    #     verbose_name=("Elenco Actoral de la serie")
+    # )
+    # creadores = models.ManyToManyField(
+    #     Persona,
+    #     blank=True,
+    #     related_name="serie_creadores",
+    #     verbose_name=("Creadores de la serie")
+    # )
+    elenco = models.OneToOneField(
+        Elenco,
+        on_delete=models.CASCADE,
+        null=True,
         blank=True,
+        verbose_name=("Elenco"),
         related_name="serie_elenco",
-        verbose_name=("Elenco Actoral de la serie")
-    )
-    creadores = models.ManyToManyField(
-        Persona,
-        blank=True,
-        related_name="serie_creadores",
-        verbose_name=("Creadores de la serie")
+        help_text=("Elenco de la serie"),
     )
     generos = models.ManyToManyField(
         Genero,
@@ -105,6 +142,7 @@ class Capitulo(models.Model):
     def __str__(self):
         return str(self.temporada.serie.nombre) + ' - Temporada', str(self.temporada.numero) + " - " + str(self.nombre)
 
+
 class Pelicula(models.Model):
     """
     Clase que representa una pelicula en la DB
@@ -133,23 +171,32 @@ class Pelicula(models.Model):
         verbose_name="Año",
         help_text="Año del estreno"
     )
-    elenco = models.ManyToManyField(
-        Persona,
+    # elenco = models.ManyToManyField(
+    #     Persona,
+    #     blank=True,
+    #     related_name="pelicula_elenco",
+    #     verbose_name=("Elenco")
+    # )
+    # director = models.ManyToManyField(
+    #     Persona,
+    #     blank=True,
+    #     related_name="pelicula_director",
+    #     verbose_name=("Director/Directores")
+    # )
+    # guionista = models.ManyToManyField(
+    #     Persona,
+    #     blank=True,
+    #     related_name="pelicula_guionista",
+    #     verbose_name=("guionistas de la pelicula")
+    # )
+    elenco = models.OneToOneField(
+        Elenco,
+        on_delete=models.CASCADE,
+        null=True,
         blank=True,
+        verbose_name=("Elenco"),
         related_name="pelicula_elenco",
-        verbose_name=("Elenco")
-    )
-    director = models.ManyToManyField(
-        Persona,
-        blank=True,
-        related_name="pelicula_director",
-        verbose_name=("Director/Directores")
-    )
-    guionista = models.ManyToManyField(
-        Persona,
-        blank=True,
-        related_name="pelicula_guionista",
-        verbose_name=("guionistas de la pelicula")
+        help_text=("Elenco de la pelicula"),
     )
     puntuacion = models.FloatField(
         max_length=10.00,
