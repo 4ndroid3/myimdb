@@ -2,6 +2,8 @@
 
 from autoslug import AutoSlugField
 from django.db import models
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 from Personas.models import Persona
 
 
@@ -22,24 +24,9 @@ class Elenco(models.Model):
     integra un conjunto de personas relacionadas
     con una pelicula o serie
     """
-    actores = models.ManyToManyField(
-        Persona,
-        blank=True,
-        related_name="elenco_actores",
-        verbose_name=("Elenco Actoral de la Pelicula/Serie")
-    )
-    directores = models.ManyToManyField(
-        Persona,
-        blank=True,
-        related_name="elenco_director",
-        verbose_name=("Director/Directores")
-    )
-    guionistas = models.ManyToManyField(
-        Persona,
-        blank=True,
-        related_name="elenco_guionista",
-        verbose_name=("Guionistas/Creadores de la Serie/Pelicula")
-    )
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey()
 
     def __str__(self):
         return "Elenco de la pelicula/serie"
@@ -73,15 +60,15 @@ class Serie(models.Model):
     #     related_name="serie_creadores",
     #     verbose_name=("Creadores de la serie")
     # )
-    elenco = models.OneToOneField(
-        Elenco,
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        verbose_name=("Elenco"),
-        related_name="serie_elenco",
-        help_text=("Elenco de la serie"),
-    )
+    # elenco = models.OneToOneField(
+    #     Elenco,
+    #     on_delete=models.CASCADE,
+    #     null=True,
+    #     blank=True,
+    #     verbose_name=("Elenco"),
+    #     related_name="serie_elenco",
+    #     help_text=("Elenco de la serie"),
+    # )
     generos = models.ManyToManyField(
         Genero,
         blank=True,
@@ -189,15 +176,15 @@ class Pelicula(models.Model):
     #     related_name="pelicula_guionista",
     #     verbose_name=("guionistas de la pelicula")
     # )
-    elenco = models.OneToOneField(
-        Elenco,
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        verbose_name=("Elenco"),
-        related_name="pelicula_elenco",
-        help_text=("Elenco de la pelicula"),
-    )
+    # elenco = models.OneToOneField(
+    #     Elenco,
+    #     on_delete=models.CASCADE,
+    #     null=True,
+    #     blank=True,
+    #     verbose_name=("Elenco"),
+    #     related_name="pelicula_elenco",
+    #     help_text=("Elenco de la pelicula"),
+    # )
     puntuacion = models.FloatField(
         max_length=10.00,
         null=True,

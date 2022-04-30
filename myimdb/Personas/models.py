@@ -106,23 +106,23 @@ class Persona(models.Model):
         choices=SEXO,
         default='H'
     )
-    # tipo = models.ManyToManyField(
-    #     Tipo,
-    #     verbose_name=("Tipo de persona"),
-    #     help_text=("Tipo: Guinista, Actor, Director, Creador..."),
-    #     blank=True
-    # )
-    tipo = ArrayField(
-        models.CharField(
-            max_length=1,
-            choices=TIPOS,
-            blank=True,
-            null=True
-        ),
-        blank=True,
-        null=True,
-        help_text=("Seleccionar 'A' para Actor, 'D' para Director, 'G' para Guionista")
+    tipo = models.ManyToManyField(
+        Tipo,
+        verbose_name=("Tipo de persona"),
+        help_text=("Tipo: Guinista, Actor, Director, Creador..."),
+        blank=True
     )
+    # tipo = ArrayField(
+    #     models.CharField(
+    #         max_length=1,
+    #         choices=TIPOS,
+    #         blank=True,
+    #         null=True
+    #     ),
+    #     blank=True,
+    #     null=True,
+    #     help_text=("Seleccionar 'A' para Actor, 'D' para Director, 'G' para Guionista")
+    # )
 
     def __str__(self):
         return self.nombre + " " + self.apellido
