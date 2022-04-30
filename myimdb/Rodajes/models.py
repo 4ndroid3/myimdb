@@ -4,7 +4,9 @@ from autoslug import AutoSlugField
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericRelation
 from Personas.models import Persona
+
 
 
 class Genero(models.Model):
@@ -27,6 +29,24 @@ class Elenco(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey()
+    actores = models.ManyToManyField(
+        Persona,
+        blank=True,
+        related_name="personas_elenco",
+        verbose_name=("Personas")
+    )
+    directores = models.ManyToManyField(
+        Persona,
+        blank=True,
+        related_name="directores_elenco",
+        verbose_name=("Directores")
+    )
+    guionistas = models.ManyToManyField(
+        Persona,
+        blank=True,
+        related_name="guionistas_elenco",
+        verbose_name=("Guionistas")
+    )
 
     def __str__(self):
         return "Elenco de la pelicula/serie"
@@ -48,27 +68,7 @@ class Serie(models.Model):
         max_length=350,
         help_text='Slug autogenerado'
     )
-    # actores = models.ManyToManyField(
-    #     Persona,
-    #     blank=True,
-    #     related_name="serie_elenco",
-    #     verbose_name=("Elenco Actoral de la serie")
-    # )
-    # creadores = models.ManyToManyField(
-    #     Persona,
-    #     blank=True,
-    #     related_name="serie_creadores",
-    #     verbose_name=("Creadores de la serie")
-    # )
-    # elenco = models.OneToOneField(
-    #     Elenco,
-    #     on_delete=models.CASCADE,
-    #     null=True,
-    #     blank=True,
-    #     verbose_name=("Elenco"),
-    #     related_name="serie_elenco",
-    #     help_text=("Elenco de la serie"),
-    # )
+    elenco = GenericRelation(Elenco)
     generos = models.ManyToManyField(
         Genero,
         blank=True,
@@ -158,33 +158,7 @@ class Pelicula(models.Model):
         verbose_name="Año",
         help_text="Año del estreno"
     )
-    # elenco = models.ManyToManyField(
-    #     Persona,
-    #     blank=True,
-    #     related_name="pelicula_elenco",
-    #     verbose_name=("Elenco")
-    # )
-    # director = models.ManyToManyField(
-    #     Persona,
-    #     blank=True,
-    #     related_name="pelicula_director",
-    #     verbose_name=("Director/Directores")
-    # )
-    # guionista = models.ManyToManyField(
-    #     Persona,
-    #     blank=True,
-    #     related_name="pelicula_guionista",
-    #     verbose_name=("guionistas de la pelicula")
-    # )
-    # elenco = models.OneToOneField(
-    #     Elenco,
-    #     on_delete=models.CASCADE,
-    #     null=True,
-    #     blank=True,
-    #     verbose_name=("Elenco"),
-    #     related_name="pelicula_elenco",
-    #     help_text=("Elenco de la pelicula"),
-    # )
+    elenco = GenericRelation(Elenco)
     puntuacion = models.FloatField(
         max_length=10.00,
         null=True,

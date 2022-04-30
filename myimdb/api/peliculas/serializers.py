@@ -53,6 +53,18 @@ class PersonasPeliculaSerializerMin(ModelSerializer):
             'nombre',
             'apellido'
         )
+
+class ElencoSerializerWrite(ModelSerializer):
+    """Serializador de Elenco para escritura"""
+    class Meta:
+        model = Elenco
+        fields = (
+            'content_object',
+            'actores',
+            'directores',
+            'guionistas'
+        )
+
 class PeliculaSerializer(ModelSerializer):
     """ serializadores de peliculas """
     elenco = PersonasPeliculaSerializerMin(
