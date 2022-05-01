@@ -1,11 +1,14 @@
 """ Serializadores de los endpoints de peliculas """
+from django.forms import CharField
 from rest_framework.serializers import (
     ModelSerializer,
     SlugRelatedField,
+    RelatedField
 )
 
-from Rodajes.models import Elenco, Genero, Pelicula
+from Rodajes.models import Elenco, Genero, Pelicula, Serie
 from Personas.models import Pais, Persona, Tipo
+
 
 class PersonaPeliculaSerializerMinWrite(ModelSerializer):
     """ Serializador de las personas en la pelicula """
@@ -56,10 +59,48 @@ class PersonasPeliculaSerializerMin(ModelSerializer):
 
 class ElencoSerializerWrite(ModelSerializer):
     """Serializador de Elenco para escritura"""
+
+    def create(self, validated_data):
+        return validated_data
+
+    actores = PersonasPeliculaSerializerMin(
+        many=True,
+        read_only=True,
+    )
+    directores = PersonasPeliculaSerializerMin(
+        many=True,
+        read_only=True,
+    )
+    guionistas = PersonasPeliculaSerializerMin(
+        many=True,
+        read_only=True,
+    )
+    class Meta:
+        """Meta Para Elenco"""
+        model = Elenco
+        fields = (
+            'actores',
+            'directores',
+            'guionistas'
+        )
+
+class ElencoSerializer(ModelSerializer):
+    """Serializador de Elenco para escritura"""
+    actores = PersonasPeliculaSerializerMin(
+        many=True,
+        read_only=True,
+    )
+    directores = PersonasPeliculaSerializerMin(
+        many=True,
+        read_only=True,
+    )
+    guionistas = PersonasPeliculaSerializerMin(
+        many=True,
+        read_only=True,
+    )
     class Meta:
         model = Elenco
         fields = (
-            'content_object',
             'actores',
             'directores',
             'guionistas'
@@ -67,16 +108,7 @@ class ElencoSerializerWrite(ModelSerializer):
 
 class PeliculaSerializer(ModelSerializer):
     """ serializadores de peliculas """
-    elenco = PersonasPeliculaSerializerMin(
-        many=True,
-        read_only=True,
-    )
-    director = PersonasPeliculaSerializerMin(
-        many=True,
-        read_only=True,
-    )
-    guionista = PersonasPeliculaSerializerMin(
-        many=True,
+    elenco = ElencoSerializer(
         read_only=True,
     )
     generos = SlugRelatedField(
@@ -95,8 +127,6 @@ class PeliculaSerializer(ModelSerializer):
             'puntuacion',
             'año',
             'elenco',
-            'director',
-            'guionista',
             'generos'
         )
 
@@ -107,20 +137,21 @@ class PeliculaSerializerWrite(ModelSerializer):
         """
         Crear una pelicula
         """
-        if 'elenco' in validated_data:
-            actores = validated_data.pop('elenco')
+        if 'actores' in validated_data:
+            actores = validated_data.pop('actores')
         else:
             actores = []
 
-        # if 'director' in validated_data:
-        #     directores = validated_data.pop('director')
-        # else:
-        #     directores = []
+        if 'directores' in validated_data:
+            directores = validated_data.pop('directores')
+        else:
+            directores = []
         
-        # if 'guionista' in validated_data:
-        #     guionistas = validated_data.pop('guionista')
-        # else:
-        #     guionistas = []
+        if 'guionistas' in validated_data:
+            guionistas = validated_data.pop('guionistas')
+        else:
+            guionistas = []
+        
         
         if 'generos' in validated_data:
             generos = validated_data.pop('generos')
@@ -130,48 +161,60 @@ class PeliculaSerializerWrite(ModelSerializer):
         pelicula = Pelicula(**validated_data)
         pelicula.save()
 
-        elenco = Elenco()
+        elenco = Elenco.objects.create()
 
         for actor in actores:
             persona_actor = Persona.objects.get_or_create(**actor)[0] #--> [Persona, True]
-            elenco.actores.set(persona_actor)
+            tipo = Tipo.objects.get(nombre='Actor')
+            persona_actor.tipo.add(tipo)
+            elenco.actores.add(persona_actor)
 
-        # for director in directores:
-        #     tipo = director.pop('tipo')
-        #     persona_director = Persona.objects.get_or_create(**director)[0] #--> [Persona, True]
-        #     persona_director.tipo.add(tipo[0])
-        #     pelicula.director.add(persona_director)
+        for director in directores:
+            persona_director = Persona.objects.get_or_create(**director)[0] #--> [Persona, True]
+            tipo = Tipo.objects.get(nombre='Director')
+            persona_director.tipo.add(tipo)
+            elenco.directores.add(persona_director)
         
-        # for guionista in guionistas:
-        #     tipo = guionista.pop('tipo')
-        #     persona_guionista = Persona.objects.get_or_create(**guionista)[0] #--> [Persona, True]
-        #     persona_guionista.tipo.add(tipo[0])
-        #     pelicula.guionista.add(persona_guionista)
+        for guionista in guionistas:
+            persona_guionista = Persona.objects.get_or_create(**guionista)[0] #--> [Persona, True]
+            tipo = Tipo.objects.get(nombre='Guionista')
+            persona_guionista.tipo.add(tipo)
+            elenco.guionistas.add(persona_guionista)
 
-        elenco.save()
-        pelicula.elenco.set(elenco)
+        
+        pelicula.elenco = elenco
+        pelicula.save()
         pelicula.generos.set(generos)
 
         return pelicula
 
-    elenco = PersonaPeliculaSerializerMinWrite(
+    # elenco = ElencoSerializerWrite(
+    #     required=False
+    # )
+    # elenco = SlugRelatedField(
+    actores = PersonaPeliculaSerializerMinWrite(
+        many=True,
+        required=False
+    )   
+    directores = PersonaPeliculaSerializerMinWrite(
         many=True,
         required=False
     )
-    # director = PersonaPeliculaSerializerMinWrite(
-    #     many=True,
-    #     required=False
-    # )
-    # guionista = PersonaPeliculaSerializerMinWrite(
-    #     many=True,
-    #     required=False
-    # )
+    guionistas = PersonaPeliculaSerializerMinWrite(
+        many=True,
+        required=False
+    )
     generos = SlugRelatedField(
         slug_field='nombre',
         queryset=Genero.objects.all(),        
         many=True,
         required=False,
     )
+    # generos = SlugRelatedField(
+    #     slug_field='pk',
+    #     read_only=True,
+    #     many=True
+    # )
     class Meta:
         """Meta"""
         model = Pelicula
@@ -180,8 +223,8 @@ class PeliculaSerializerWrite(ModelSerializer):
             'duracion',
             'puntuacion',
             'año',
-            'elenco',
-            # 'director',
-            # 'guionista',
+            'actores',
+            'directores',
+            'guionistas',
             'generos'
         )

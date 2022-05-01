@@ -26,9 +26,9 @@ class Elenco(models.Model):
     integra un conjunto de personas relacionadas
     con una pelicula o serie
     """
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey()
+    # content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    # object_id = models.PositiveIntegerField()
+    # content_object = GenericForeignKey()
     actores = models.ManyToManyField(
         Persona,
         blank=True,
@@ -68,7 +68,12 @@ class Serie(models.Model):
         max_length=350,
         help_text='Slug autogenerado'
     )
-    elenco = GenericRelation(Elenco)
+    elenco = models.OneToOneField(
+        Elenco,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
     generos = models.ManyToManyField(
         Genero,
         blank=True,
@@ -158,7 +163,13 @@ class Pelicula(models.Model):
         verbose_name="Año",
         help_text="Año del estreno"
     )
-    elenco = GenericRelation(Elenco)
+    elenco = models.ForeignKey(
+        Elenco,
+        null=True,
+        blank=True,
+        related_name='elenco_pelicula',
+        on_delete=models.CASCADE,
+    )
     puntuacion = models.FloatField(
         max_length=10.00,
         null=True,

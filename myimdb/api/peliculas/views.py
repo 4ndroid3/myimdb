@@ -1,11 +1,10 @@
 """Vistas de peliculas"""
 
+import traceback
 from rest_framework.viewsets import ModelViewSet
-from rest_framework import permissions
 from rest_framework import status
 from rest_framework.settings import api_settings
 from rest_framework.response import Response
-from rest_framework.generics import get_object_or_404
 
 from Rodajes.models import Pelicula
 from api.peliculas.serializers import (
@@ -15,6 +14,7 @@ from api.peliculas.serializers import (
     PersonaPeliculaSerializerMinWrite
 )
 from Personas.models import Persona
+from rest_framework.renderers import JSONRenderer
 
 
 class PeliculaView(ModelViewSet):
