@@ -12,15 +12,9 @@ from Personas.models import Pais, Persona, Tipo
 
 class PersonaPeliculaSerializerMinWrite(ModelSerializer):
     """ Serializador de las personas en la pelicula """
-    # tipo = SlugRelatedField(
-    #     slug_field='nombre',
-    #     queryset=Tipo.objects.all(),
-    #     required=False,
-    #     many=True,
-    # )
     class Meta:
         model = Persona
-        fields = ('nombre', 'apellido', 'tipo')
+        fields = ('nombre', 'apellido',)
 
 class PersonasPeliculaSerializer(ModelSerializer):
     """ serializadores de personas """
@@ -125,7 +119,7 @@ class PeliculaSerializer(ModelSerializer):
             'slug',
             'duracion',
             'puntuacion',
-            'año',
+            'anio',
             'elenco',
             'generos'
         )
@@ -222,7 +216,7 @@ class PeliculaSerializerWrite(ModelSerializer):
             'nombre',
             'duracion',
             'puntuacion',
-            'año',
+            'anio',
             'actores',
             'directores',
             'guionistas',

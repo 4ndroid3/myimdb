@@ -158,10 +158,10 @@ class Pelicula(models.Model):
         null=True,
         help_text="Duracion en minutos de la pelicula"
     )
-    año = models.IntegerField(
+    anio = models.PositiveSmallIntegerField(
         null=True,
         verbose_name="Año",
-        help_text="Año del estreno"
+        help_text="Año del estreno",
     )
     elenco = models.ForeignKey(
         Elenco,
